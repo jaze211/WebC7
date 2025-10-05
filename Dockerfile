@@ -12,6 +12,11 @@ RUN wget https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/ja
 # Copy source code and build files (including the new JAR in libs)
 COPY . /app
 
+# Update project.properties for each project to point to the local CopyLibs JAR
+RUN sed -i 's|^libs\.CopyLibs\.classpath=.*$|libs.CopyLibs.classpath=../../libs/org-netbeans-modules-java-j2seproject-copylibstask.jar|' /app/ch07_ex1_download/nbproject/project.properties && \
+    sed -i 's|^libs\.CopyLibs\.classpath=.*$|libs.CopyLibs.classpath=../../libs/org-netbeans-modules-java-j2seproject-copylibstask.jar|' /app/ch07_ex2_download/nbproject/project.properties && \
+    sed -i 's|^libs\.CopyLibs\.classpath=.*$|libs.CopyLibs.classpath=../../libs/org-netbeans-modules-java-j2seproject-copylibstask.jar|' /app/ch07_ex3_cart/nbproject/project.properties
+
 # Create dist directories for WAR output
 RUN mkdir -p /app/ch07_ex1_download/dist \
     /app/ch07_ex2_download/dist \
@@ -19,15 +24,15 @@ RUN mkdir -p /app/ch07_ex1_download/dist \
 
 # Build ch07_ex1_download using Ant
 RUN cd ch07_ex1_download && \
-    ant -f build.xml dist -Dlibs.dir=/app/libs -Dservlet-api.jar=/app/javax.servlet-api-4.0.1.jar -Dlibs.CopyLibs.classpath=/app/libs/org-netbeans-modules-java-j2seproject-copylibstask.jar
+    ant -f build.xml dist -Dlibs.dir=/app/libs -Dservlet-api.jar=/app/javax.servlet-api-4.0.1.jar
 
 # Build ch07_ex2_download using Ant
 RUN cd ch07_ex2_download && \
-    ant -f build.xml dist -Dlibs.dir=/app/libs -Dservlet-api.jar=/app/javax.servlet-api-4.0.1.jar -Dlibs.CopyLibs.classpath=/app/libs/org-netbeans-modules-java-j2seproject-copylibstask.jar
+    ant -f build.xml dist -Dlibs.dir=/app/libs -Dservlet-api.jar=/app/javax.servlet-api-4.0.1.jar
 
 # Build ch07_ex3_cart using Ant
 RUN cd ch07_ex3_cart && \
-    ant -f build.xml dist -Dlibs.dir=/app/libs -Dservlet-api.jar=/app/javax.servlet-api-4.0.1.jar -Dlibs.CopyLibs.classpath=/app/libs/org-netbeans-modules-java-j2seproject-copylibstask.jar
+    ant -f build.xml dist -Dlibs.dir=/app/libs -Dservlet-api.jar=/app/javax.servlet-api-4.0.1.jar
 
 # ---- Stage 2: Run ----
 FROM tomcat:9-jdk11-openjdk
