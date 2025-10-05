@@ -1,0 +1,439 @@
+Perspective
+The goal of this chapter has been to show you how to use the servlet API
+to track sessions and work with cookies. If you understand the code in the
+Download application that’s presented at the end of this chapter, this chapter
+has achieved its goal. As a result, you should now be able to develop web
+applications that require session tracking.
+In the previous chapter, you learned how to work with a special type of
+Java class known as a JavaBean. In that chapter, you stored a JavaBean as an
+attribute of the request object. However, it’s also common to store a JavaBean
+as an attribute of the session object as shown in this chapter.
+In the early days of servlet/JSP programming, it was more common for
+web browsers to have per-session cookies disabled, and the security flaws with
+URL encoding weren’t widely known. As a result, it was more common to use
+URL encoding to provide for session tracking.
+Today, it’s less common for web browsers to have per-session cookies
+disabled, and the security flaws with URL encoding are widely known. As a
+result, it isn’t considered a good practice to use URL encoding.
+Summary
+Because HTTP is a stateless protocol, web applications must provide for
+session tracking.That way, an application is able to relate each request to a
+specific browser and to the data for that session.
+To provide for session tracking,Java creates one session object for each
+browser. Then, you can add attributes like variables and objects to this
+session object, and you can retrieve the values of these attributes in any of
+the servlets and JSPs that are run during the session.
+In general, it’s considered a best practice to implement session tracking
+by using cookies. Then, the session ID is stored in a cookie on the user’s
+browser. This type of session tracking is done automatically by the servlet
+API, but it doesn’t work unless the browser enables cookies.
+Persistent cookies are stored on the user’s PC, while per-session cookies are
+deleted when the session ends.
+It’s also possible to implement session tracking by using URL encoding.
+This works even when the browser doesn’t enable cookies. However, it can
+lead to session hijacking. As a result, it’s considered a bad practice.
+To create cookies, use the methods of the Cookie class. To store a cookie on
+the user’s browser, use the addCookie method of the response object. To get
+the cookies from a browser, use the getCookies method of the request object.
+To pass parameters to a servlet, you can use URL rewriting or hidden fields.
+When you use hidden fields, you can easily include spaces and special
+characters in your parameter values. In addition, you can pass parameters
+more securely than you can with URL rewriting.
+241 Chapter 7 How to work with sessions and cookies
+Exercise 7-1 Use a cookie
+1. Open the ch07_exl_download project in the ex_starts directory.
+2. Run the project. This should display a list of album links.
+3. Click on the link lor an album. This should display the Register page.
+4. User the Register page to register. This should take you to a Downloads page
+where you can listen to an MP3 file.
+When you click on an MP3 link on the Downloads page, your browser
+should play the corresponding sound file. For this to work, the Music Store
+application must he deployed. If it isn’t, you’ll get a 404 error when you click
+on the MP3 link. To fix this, you can open the musicStore project in the
+book_apps directory and run it.
+5. From a Downloads page, click the View All Cookies link. This should display
+all of the cookies that this application has sent to your browser. This should
+include the cookie named emailCookie and a cookie named JSESS10N1D.
+6. Click the Delete All Persistent Cookies link to delete all persistent cookies.
+7. Close your browser and run the application again. Then, click on a link for an
+album. This should display the Register page again.
+8. Use the Register page to register again.
+9. Open the source code for the DownloadServlet. Then, modify the code that
+adds the cookie so it stores the cookie with a name of “userEmail”. Also,
+modify this code so it stores the cookie for 3 years.
+10. Open the index.jsp file and add code to the top of the page that displays the
+name and value of the cookie. For an email address ofjsmith@gmail.com,
+this code should display this output:
+User Email: jsmith@gmail.com
+To do this, you can add a p tag to the page with EL that uses the implicit
+cookie object to get the value of the cookie that stores the user’s email
+address.
+11. Run the project again. Then, test to make sure it works correctly. To do that,
+you can register, use the View All Cookies link to view the name and value of
+this cookie, and use the Index page to view the value of the email cookie.
+242 Section 2 Essential servlet and JSP skills
+Exercise 7-2 Use a session attribute
+i . Open the ch07_ex2_download project in the ex_starts directory.
+Open the source code for the DownloadServlet class. Then, in the checkUser
+method, modify the code so it sets the Product object as a session attribute
+instead of setting the product code as a session attribute. To do that, you can
+create a Product object that holds the data for the current product by using the
+getProduct method of the murach.data.ProductIO class like this:
+ServletContext sc = this.getServletContext();
+String productPath = sc.getRealPath("WEB-INF/products.txt");
+Product product
+In the registerUser method, modify the code so it uses the Product object that’s
+stored in the session to build the URL for the appropriate Download page.
+For each product’s Download page, get the Product object from the session
+object and use it to get the product code for the album as well as the
+description for the album.
+Run the Download application and test it to make sure it works correctly. To
+get the MP3 links to work correctly, you may need to open the musicStore
+project in the book_apps directory and run it.
+View the cookies for this application. Then, click the Delete All Persistent
+Cookies link to delete all persistent cookies.
+Close the browser and run the Download application again to make sure the
+DownloadServlet class still works correctly.
+2.
+ProductlO.getProduct(productCode, productPath);
+3.
+4.
+5.
+6.
+7.
+Exercise 7-3 Use URL rewriting instead
+of hidden fields
+i . Open the ch07_ex3_cart project in the ex_starts directory.
+Open the source code for the CartServlet class. Note that this servlet only
+supports the HTTP POST method.
+Open the cart.jsp file. Then, convert the Remove button to a Remove link that
+uses URL rewriting.
+Run the application and test the Remove link. This link shouldn’t work since it
+uses the HTTP GET method.
+Modify the CartServlet class so it includes a doGet method that includes a
+single statement that calls the doPost method. That way, the CartServlet uses
+the same code to handle the HTTP POST and GET methods.
+Run the application again and test the Remove link. Now, this link should
+work correctly, and it should display the parameter names and values in the
+browser’s URL.
+Test the Update button too. Since this button uses the HTTP POST method, it
+should not display the parameter names and values in the browser’s URL.
+
+
+
+Chuẩn rồi 👍. Mình sẽ liệt kê chính xác **các file bạn cần chỉnh sửa cho từng bài tập trong chương 7**, theo đề bài:
+
+---
+
+## 🔹 Bài 7-1 (Cookie) – `ch07_ex1_download`
+
+### File cần sửa:
+
+1. **`src/java/murach/download/DownloadServlet.java`**
+
+   * Trong method đăng ký user → chỗ add cookie:
+
+     * Đổi tên cookie từ `emailCookie` → `"userEmail"`.
+     * Đặt `cookie.setMaxAge(60*60*24*365*3)` (3 năm).
+
+2. **`web/index.jsp`**
+
+   * Ở đầu file, thêm EL để hiển thị cookie userEmail, ví dụ:
+
+     ```jsp
+     <p>User Email: ${cookie.userEmail.value}</p>
+     ```
+
+👉 Các file JSP khác (register.jsp, view_cookies.jsp, delete_cookies.jsp…) không cần chỉnh, chỉ để test thôi.
+
+---
+
+## 🔹 Bài 7-2 (Session Attribute) – `ch07_ex2_download`
+
+### File cần sửa:
+
+1. **`src/java/murach/download/DownloadServlet.java`**
+
+   * Trong **`checkUser` method**:
+
+     * Thay vì `session.setAttribute("productCode", code);`
+       → tạo `Product product = ProductIO.getProduct(productCode, productPath);`
+       → `session.setAttribute("product", product);`.
+   * Trong **`registerUser` method**:
+
+     * Lấy `Product product = (Product) session.getAttribute("product");`
+     * Dùng `product.getCode()` và `product.getDescription()` để build URL download page.
+
+2. **Các file JSP download pages** (`8601_download.jsp`, `jr01_download.jsp`, `pf01_download.jsp`, `pf02_download.jsp`)
+
+   * Nếu cần hiển thị thông tin album, thì thay EL để lấy từ session attribute `product` (ví dụ: `${product.description}`) thay vì chỉ lấy code string.
+
+👉 `web.xml` chỉ để mapping, không phải chỉnh.
+
+---
+
+## 🔹 Bài 7-3 (URL Rewriting) – `ch07_ex3_cart`
+
+### File cần sửa:
+
+1. **`web/cart.jsp`**
+
+   * Thay nút Remove (button + POST form) thành link (GET) với URL rewriting:
+
+     ```jsp
+     <a href="cart?productCode=${item.product.code}&action=remove">Remove</a>
+     ```
+
+2. **`src/java/murach/cart/CartServlet.java`**
+
+   * Thêm method `doGet(HttpServletRequest req, HttpServletResponse res)` gọi lại `doPost(req, res);`
+
+     ```java
+     @Override
+     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+             throws ServletException, IOException {
+         doPost(request, response);
+     }
+     ```
+
+👉 `checkout.jsp`, `index.jsp` không cần chỉnh.
+
+---
+
+✅ Tóm gọn:
+
+* **Ex1**: `DownloadServlet.java` + `index.jsp`.
+* **Ex2**: `DownloadServlet.java` + các download JSP (nếu cần hiển thị product).
+* **Ex3**: `cart.jsp` + `CartServlet.java`.
+
+---
+
+Bạn có muốn mình viết luôn code mẫu đã chỉnh sửa cho 3 file quan trọng nhất (**DownloadServlet Ex1**, **DownloadServlet Ex2**, **CartServlet Ex3**) để copy-paste không?
+
+
+
+|-- ch07download
+|   |-- src
+|   |   +-- java
+|   |-- web
+|   |   |-- styles
+|   |   |-- WEB-INF
+|   |   |-- 8601_download.jsp
+|   |   |-- delete_cookies.jsp
+|   |   |-- index.jsp
+|   |   |-- jr01_download.jsp
+|   |   |-- pf01_download.jsp
+|   |   |-- pf02_download.jsp
+|   |   |-- register.jsp
+|   |   +-- view_cookies.jsp
+|   +-- build.xml
+|-- ch07_ex1_download
+|   |-- src
+|   |   +-- java
+|   |-- web
+|   |   |-- styles
+|   |   |-- WEB-INF
+|   |   |-- 8601_download.jsp
+|   |   |-- delete_cookies.jsp
+|   |   |-- index.jsp
+|   |   |-- jr01_download.jsp
+|   |   |-- pf01_download.jsp
+|   |   |-- pf02_download.jsp
+|   |   |-- register.jsp
+|   |   +-- view_cookies.jsp
+|   +-- build.xml
+|-- ch07_ex1_download_sol
+|   |-- src
+|   |   +-- java
+|   |-- web
+|   |   |-- styles
+|   |   |-- WEB-INF
+|   |   |-- 8601_download.jsp
+|   |   |-- delete_cookies.jsp
+|   |   |-- index.jsp
+|   |   |-- jr01_download.jsp
+|   |   |-- pf01_download.jsp
+|   |   |-- pf02_download.jsp
+|   |   |-- register.jsp
+|   |   +-- view_cookies.jsp
+|   +-- build.xml
+|-- ch07_ex2_download
+|   |-- src
+|   |   +-- java
+|   |-- web
+|   |   |-- styles
+|   |   |-- WEB-INF
+|   |   |   +-- web.xml
+|   |   |-- 8601_download.jsp
+|   |   |-- delete_cookies.jsp
+|   |   |-- index.jsp
+|   |   |-- jr01_download.jsp
+|   |   |-- pf01_download.jsp
+|   |   |-- pf02_download.jsp
+|   |   |-- register.jsp
+|   |   +-- view_cookies.jsp
+|   +-- build.xml
+|-- ch07_ex2_download_sol
+|   |-- src
+|   |   +-- java
+|   |-- web
+|   |   |-- styles
+|   |   |-- WEB-INF
+|   |   |   +-- web.xml
+|   |   |-- 8601_download.jsp
+|   |   |-- delete_cookies.jsp
+|   |   |-- index.jsp
+|   |   |-- jr01_download.jsp
+|   |   |-- pf01_download.jsp
+|   |   |-- pf02_download.jsp
+|   |   |-- register.jsp
+|   |   +-- view_cookies.jsp
+|   +-- build.xml
+|-- ch07_ex3_cart
+|   |-- src
+|   |   +-- java
+|   |-- web
+|   |   |-- styles
+|   |   |-- WEB-INF
+|   |   |   +-- web.xml
+|   |   |-- cart.jsp
+|   |   |-- checkout.jsp
+|   |   +-- index.jsp
+|   +-- build.xml
+|-- ch07_ex3_cart_sol
+|   |-- src
+|   |   +-- java
+|   |-- web
+|   |   |-- styles
+|   |   |-- WEB-INF
+|   |   |   +-- web.xml
+|   |   |-- cart.jsp
+|   |   |-- checkout.jsp
+|   |   +-- index.jsp
+|   +-- build.xml
++-- doc7.txt
+
+
+
+|-- ch07_ex1_download
+|   |-- nbproject
+|   |   |-- private
+|   |   |   |-- private.properties
+|   |   |   +-- private.xml
+|   |   |-- ant-deploy.xml
+|   |   |-- build-impl.xml
+|   |   |-- genfiles.properties
+|   |   |-- project.properties
+|   |   +-- project.xml
+|   |-- src
+|   |   |-- conf
+|   |   |   +-- MANIFEST.MF
+|   |   +-- java
+|   |       +-- murach
+|   |           |-- business
+|   |           |   +-- User.java
+|   |           |-- data
+|   |           |   +-- UserIO.java
+|   |           |-- download
+|   |           |   +-- DownloadServlet.java
+|   |           +-- util
+|   |               +-- CookieUtil.java
+|   |-- web
+|   |   |-- META-INF
+|   |   |   +-- context.xml
+|   |   |-- styles
+|   |   |   +-- main.css
+|   |   |-- WEB-INF
+|   |   |   +-- web.xml
+|   |   |-- 8601_download.jsp
+|   |   |-- delete_cookies.jsp
+|   |   |-- index.jsp
+|   |   |-- jr01_download.jsp
+|   |   |-- pf01_download.jsp
+|   |   |-- pf02_download.jsp
+|   |   |-- register.jsp
+|   |   +-- view_cookies.jsp
+|   +-- build.xml
+|-- ch07_ex2_download
+|   |-- nbproject
+|   |   |-- private
+|   |   |   |-- private.properties
+|   |   |   +-- private.xml
+|   |   |-- ant-deploy.xml
+|   |   |-- build-impl.xml
+|   |   |-- genfiles.properties
+|   |   |-- project.properties
+|   |   +-- project.xml
+|   |-- src
+|   |   |-- conf
+|   |   |   +-- MANIFEST.MF
+|   |   +-- java
+|   |       +-- murach
+|   |           |-- business
+|   |           |   |-- Product.java
+|   |           |   +-- User.java
+|   |           |-- data
+|   |           |   |-- ProductIO.java
+|   |           |   +-- UserIO.java
+|   |           |-- download
+|   |           |   +-- DownloadServlet.java
+|   |           +-- util
+|   |               +-- CookieUtil.java
+|   |-- web
+|   |   |-- META-INF
+|   |   |   +-- context.xml
+|   |   |-- styles
+|   |   |   +-- main.css
+|   |   |-- WEB-INF
+|   |   |   |-- products.txt
+|   |   |   +-- web.xml
+|   |   |-- 8601_download.jsp
+|   |   |-- delete_cookies.jsp
+|   |   |-- index.jsp
+|   |   |-- jr01_download.jsp
+|   |   |-- pf01_download.jsp
+|   |   |-- pf02_download.jsp
+|   |   |-- register.jsp
+|   |   +-- view_cookies.jsp
+|   +-- build.xml
+|-- ch07_ex3_cart
+|   |-- nbproject
+|   |   |-- private
+|   |   |   |-- private.properties
+|   |   |   +-- private.xml
+|   |   |-- ant-deploy.xml
+|   |   |-- build-impl.xml
+|   |   |-- genfiles.properties
+|   |   |-- project.properties
+|   |   +-- project.xml
+|   |-- src
+|   |   |-- conf
+|   |   |   +-- MANIFEST.MF
+|   |   +-- java
+|   |       +-- murach
+|   |           |-- business
+|   |           |   |-- Cart.java
+|   |           |   |-- LineItem.java
+|   |           |   +-- Product.java
+|   |           |-- cart
+|   |           |   +-- CartServlet.java
+|   |           +-- data
+|   |               +-- ProductIO.java
+|   |-- web
+|   |   |-- META-INF
+|   |   |   +-- context.xml
+|   |   |-- styles
+|   |   |   +-- main.css
+|   |   |-- WEB-INF
+|   |   |   |-- products.txt
+|   |   |   +-- web.xml
+|   |   |-- cart.jsp
+|   |   |-- checkout.jsp
+|   |   +-- index.jsp
+|   +-- build.xml
+|-- libs
+|   |-- javax.mail.jar
+|   |-- jstl-1.2.jar
+|   |-- mysql-connector-java-5.1.23-bin.jar
+|   |-- poi-3.10-FINAL-20140208.jar
+|   +-- tomcat-dbcp.jar
